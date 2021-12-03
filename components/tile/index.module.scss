@@ -9,6 +9,7 @@ $colours: #0100fe, #017f01, #fe0000,
 .tile {
     height: 0;
     background-color: #c0c0c0;
+    font-weight: bold;
 
     &:not(.dug) {
         border-left: $border-size solid $mine-border-light;
