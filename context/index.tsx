@@ -1,7 +1,7 @@
 import { generateMinefield } from './generation';
 import React, { useReducer } from 'react';
 import type { TileModel } from './generation';
-import { Action, dugAction, firstDugAction } from './actions';
+import { Action, dugAction, firstDugAction, flagAction } from './actions';
 
 export type State = {
     minefield: TileModel[][],
@@ -10,7 +10,11 @@ export type State = {
 }
 
 export const MineFieldContext = React.createContext({
-    state: {},
+    state: {
+        minefield: [] as TileModel[][],
+        exploded: false,
+        firstMoveMade: false
+    },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispatch: (() => { }) as React.Dispatch<Action>
 });
@@ -26,6 +30,8 @@ function mineFieldReducer(state: State, action: Action): State {
                 state,
                 state.firstMoveMade ? dugAction(state, action) : firstDugAction(state, action)
             );
+        case 'flag':
+            return Object.assign({}, state, flagAction(state, action));
         default:
             return state;
     }

@@ -3,6 +3,7 @@ import sampleSize from 'lodash.samplesize';
 export type TileModel = {
     haveMine: boolean,
     minesNearby: number,
+    flagged: boolean,
     dug: boolean
 }
 
@@ -23,7 +24,8 @@ function generateMinefield(width: number, height: number, mines: number): TileMo
             model[x][y] = {
                 haveMine: false,
                 minesNearby: 0,
-                dug: false
+                dug: false,
+                flagged: false
             };
         }
     }

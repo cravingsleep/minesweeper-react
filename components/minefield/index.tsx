@@ -13,6 +13,7 @@ function Minefield() {
                     haveMine={tile.haveMine}
                     dug={tile.dug}
                     minesNearby={tile.minesNearby}
+                    flagged={tile.flagged}
                     key={y}
                     x={x}
                     y={y}

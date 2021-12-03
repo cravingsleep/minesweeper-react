@@ -5,7 +5,7 @@ import { calculateMinesAround } from './generation';
 export type Action = {
     x: number,
     y: number,
-    type: 'dug'
+    type: 'dug' | 'flag'
 }
 
 function dugAction(state: State, action: Action): Partial<State> {
@@ -94,4 +94,17 @@ function firstDugAction(state: State, action: Action): Partial<State> {
     return Object.assign({}, dugAction(state, action), { firstMoveMade: true });
 }
 
-export { dugAction, firstDugAction };
+function flagAction(state: State, action: Action): Partial<State> {
+    const { minefield } = state;
+    const { x, y } = action;
+
+    const tile = minefield[x][y];
+
+    if (!tile.dug) {
+        tile.flagged = !tile.flagged;
+    }
+
+    return { minefield };
+}
+
+export { dugAction, firstDugAction, flagAction };
