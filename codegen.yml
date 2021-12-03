@@ -1,0 +1,9 @@
+overwrite: true
+schema: "./pages/api/typedefs/typedefs.graphql"
+documents: "./pages/api/**/*.graphql"
+generates:
+  ./pages/api/__generated__/types.tsx:
+    plugins:
+      - "typescript"
+    config:
+      avoidOptionals: true
