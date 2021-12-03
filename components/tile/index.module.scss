@@ -3,6 +3,9 @@ $mine-border-dark: #808080;
 
 $border-size: 2px;
 
+$colours: #0100fe, #017f01, #fe0000,
+     #010080, #810102, #008081, #000000, #808080;
+
 .tile {
     height: 0;
     background-color: #c0c0c0;
@@ -23,6 +26,14 @@ $border-size: 2px;
 
         display: block;
         padding-bottom: calc(47% - 0.5em);
+    }
+}
+
+@for $i from 1 through length($colours) {
+    $colour: nth($colours, $i);
+
+    .mines-nearby-#{$i} {
+        color: $colour;
     }
 }
 

@@ -26,12 +26,21 @@ const Tile = React.memo(function Tile(props: TileProps) {
 
     return <td
         onClick={onClick}
-        className={classnames([styles.tile], {
+        className={classnames([styles.tile, styles[`mines-nearby-${minesNearby}`]], {
             [styles.dug]: dug,
             [styles.mine]: haveMine && dug
         })}>
         {minesNearby === 0 || !dug ? <br /> : minesNearby}
     </td>;
-});
+    /**
+     * the `x` and `y` coords do not actually alter the
+     * rendering here so we can preclude them from the memo
+     * to speed up rendering
+     */
+}, (prevProps, nextProps) =>
+    prevProps.dug === nextProps.dug &&
+    prevProps.haveMine === nextProps.haveMine &&
+    prevProps.minesNearby === nextProps.minesNearby
+);
 
 export default Tile;
