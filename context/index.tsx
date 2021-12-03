@@ -1,17 +1,16 @@
-import generateMinefield from './generation';
+import { generateMinefield } from './generation';
 import React, { useReducer } from 'react';
 import type { TileModel } from './generation';
-import { Action, dugAction } from './actions';
+import { Action, dugAction, firstDugAction } from './actions';
 
 export type State = {
     minefield: TileModel[][],
-    exploded: boolean
+    exploded: boolean,
+    firstMoveMade: boolean
 }
 
 export const MineFieldContext = React.createContext({
-    state: {
-        minefield: [] as TileModel[][]
-    },
+    state: {},
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispatch: (() => { }) as React.Dispatch<Action>
 });
@@ -22,7 +21,11 @@ export const MineFieldDispatchContext = React.createContext((() => { }) as React
 function mineFieldReducer(state: State, action: Action): State {
     switch (action.type) {
         case 'dug':
-            return dugAction(state, action);
+            return Object.assign(
+                {},
+                state,
+                state.firstMoveMade ? dugAction(state, action) : firstDugAction(state, action)
+            );
         default:
             return state;
     }
@@ -42,7 +45,8 @@ export function MineFieldContextProvider(props: Props) {
             props.height,
             props.mines
         ),
-        exploded: false
+        exploded: false,
+        firstMoveMade: false
     });
 
     return <MineFieldContext.Provider value={{ state, dispatch }}>

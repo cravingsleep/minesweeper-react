@@ -6,6 +6,12 @@ export type TileModel = {
     dug: boolean
 }
 
+function calculateMinesAround(model: TileModel[][]): void {
+    model.forEach((row, x) => row.forEach((tile, y) => {
+        tile.minesNearby = countMinesAround(model, x, y);
+    }));
+}
+
 function generateMinefield(width: number, height: number, mines: number): TileModel[][] {
     const model = <TileModel[][]>[];
 
@@ -28,9 +34,7 @@ function generateMinefield(width: number, height: number, mines: number): TileMo
         tile.haveMine = true;
     });
 
-    model.forEach((row, x) => row.forEach((tile, y) => {
-        tile.minesNearby = countMinesAround(model, x, y);
-    }));
+    calculateMinesAround(model);
 
     return model;
 }
@@ -52,4 +56,4 @@ function countMinesAround(minefield: TileModel[][], x: number, y: number): numbe
     return top + bottom + left + right + topright + topleft + bottomright + bottomleft;
 }
 
-export default generateMinefield;
+export { generateMinefield, calculateMinesAround };

@@ -1,4 +1,6 @@
 import { State } from 'context';
+import sampleSize from 'lodash.samplesize';
+import { calculateMinesAround } from './generation';
 
 export type Action = {
     x: number,
@@ -6,7 +8,7 @@ export type Action = {
     type: 'dug'
 }
 
-function dugAction(state: State, action: Action): State {
+function dugAction(state: State, action: Action): Partial<State> {
     const { minefield } = state;
     const { x, y } = action;
 
@@ -14,18 +16,18 @@ function dugAction(state: State, action: Action): State {
 
     // game over
     if (minefield[x][y].haveMine) {
-        return { minefield: state.minefield, exploded: true };
+        return { exploded: true };
     }
 
-    const visited: { [key: string]: boolean } = {};
+    const visited = new Set<string>();
 
     // dig all number neighbours and do again on 0s
     function recursivelyDig(x: number, y: number): void {
-        if (visited[`x:${x} y:${y}`]) {
+        if (visited.has(`x:${x} y:${y}`)) {
             return;
         }
 
-        visited[`x:${x} y:${y}`] = true;
+        visited.add(`x:${x} y:${y}`);
 
         const tile = minefield[x]?.[y];
 
@@ -52,4 +54,44 @@ function dugAction(state: State, action: Action): State {
     return { minefield, exploded: false };
 }
 
-export { dugAction };
+function firstDugAction(state: State, action: Action): Partial<State> {
+    const { minefield } = state;
+    const { x, y } = action;
+
+    // all the squares that cannot have mines on the first go
+    const surroundingSquares = [
+        minefield[x][y],
+        minefield[x]?.[y + 1],
+        minefield[x]?.[y - 1],
+        minefield[x + 1]?.[y],
+        minefield[x - 1]?.[y],
+        minefield[x + 1]?.[y + 1],
+        minefield[x - 1]?.[y + 1],
+        minefield[x + 1]?.[y - 1],
+        minefield[x - 1]?.[y - 1]
+    ].filter(Boolean);
+
+    const minesToRelocate = surroundingSquares
+        .filter(tile => tile.haveMine)
+        .length;
+
+    // get rid of the mines in these
+    surroundingSquares.forEach(tile => {
+        tile.haveMine = false;
+    });
+
+    const everyOtherPossiblePlace = minefield.flat()
+        .filter(tile => !tile.haveMine && !surroundingSquares.includes(tile));
+
+    const chosen = sampleSize(everyOtherPossiblePlace, minesToRelocate);
+
+    chosen.forEach(tile => {
+        tile.haveMine = true;
+    });
+
+    calculateMinesAround(minefield);
+
+    return Object.assign({}, dugAction(state, action), { firstMoveMade: true });
+}
+
+export { dugAction, firstDugAction };
