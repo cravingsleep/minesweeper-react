@@ -21,14 +21,60 @@ function setFlagModeAction(action: SetFlagModeAction): Partial<State> {
     };
 }
 
+function quickClear(state: State, action: MinefieldClickAction): Partial<State> {
+    const { minefield } = state;
+    const { x, y } = action;
+
+    const tile = minefield[x][y];
+
+    if (tile.flagged || tile.haveMine || tile.minesNearby === 0) {
+        return state;
+    }
+
+    const surroundingTiles = [
+        minefield[x]?.[y + 1],
+        minefield[x]?.[y - 1],
+        minefield[x + 1]?.[y],
+        minefield[x - 1]?.[y],
+        minefield[x + 1]?.[y + 1],
+        minefield[x - 1]?.[y + 1],
+        minefield[x + 1]?.[y - 1],
+        minefield[x - 1]?.[y - 1]
+    ].filter(Boolean);
+
+    const surroundingFlags = surroundingTiles
+        .filter(tile => tile.flagged).length;
+
+    if (tile.minesNearby !== surroundingFlags) {
+        return state;
+    }
+
+    const surroundingNotFlags = surroundingTiles
+        .filter(tile => !tile.flagged && !tile.dug);
+
+    return surroundingNotFlags.reduce((acc, cur) => {
+        return Object.assign({}, acc, dugAction(acc, {
+            type: 'click',
+            x: cur.x,
+            y: cur.y
+        }));
+    }, state);
+}
+
 function dugAction(state: State, action: MinefieldClickAction): Partial<State> {
     const { minefield } = state;
     const { x, y } = action;
 
-    minefield[x][y].dug = true;
+    const tile = minefield[x][y];
+
+    if (tile.dug) {
+        return quickClear(state, action);
+    }
+
+    tile.dug = true;
 
     // game over
-    if (minefield[x][y].haveMine) {
+    if (tile.haveMine) {
         return { exploded: true };
     }
 

@@ -21,7 +21,7 @@ const Button = React.memo(function Button(props: ButtonProps) {
     />;
 });
 
-function FlagControls() {
+const FlagControls = React.memo(function FlagControls() {
     const { state, dispatch } = useContext(MineFieldContext);
 
     const setFlagOn = useCallback(() => {
@@ -42,6 +42,6 @@ function FlagControls() {
         <Button text="Flag" on={state.flagModeOn} onClick={setFlagOn} />
         <Button text="Dig" on={!state.flagModeOn} onClick={setFlagOff} />
     </section>;
-}
+});
 
 export default FlagControls;

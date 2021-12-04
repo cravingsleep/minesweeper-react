@@ -4,7 +4,9 @@ export type TileModel = {
     haveMine: boolean,
     minesNearby: number,
     flagged: boolean,
-    dug: boolean
+    dug: boolean,
+    x: number,
+    y: number
 }
 
 function calculateMinesAround(model: TileModel[][]): void {
@@ -25,7 +27,9 @@ function generateMinefield(width: number, height: number, mines: number): TileMo
                 haveMine: false,
                 minesNearby: 0,
                 dug: false,
-                flagged: false
+                flagged: false,
+                x,
+                y
             };
         }
     }
