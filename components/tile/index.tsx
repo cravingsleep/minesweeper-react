@@ -1,5 +1,5 @@
 import { MineFieldDispatchContext } from 'context';
-import React, { MouseEventHandler, SyntheticEvent, useCallback, useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import classnames from 'Utils/classnames';
 import styles from './index.module.scss';
 
@@ -40,7 +40,7 @@ const Tile = React.memo(function Tile(props: TileProps) {
 
     const onClick = useCallback(() => {
         dispatch({
-            type: 'dug',
+            type: 'click',
             x,
             y
         });
@@ -48,7 +48,8 @@ const Tile = React.memo(function Tile(props: TileProps) {
 
     return <td
         onClick={onClick}
-        className={classnames([styles.tile, styles[`mines-nearby-${minesNearby}`]], {
+        className={classnames([styles.tile], {
+            [styles[`mines-nearby-${minesNearby}`]]: dug && !flagged,
             [styles.dug]: dug,
             [styles.mine]: haveMine && dug
         })}>

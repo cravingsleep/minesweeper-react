@@ -17,10 +17,10 @@ function generateMinefield(width: number, height: number, mines: number): TileMo
     const model = <TileModel[][]>[];
 
     // init
-    for (let x = 0; x < width; x++) {
+    for (let x = 0; x < height; x++) {
         model.push([]);
 
-        for (let y = 0; y < height; y++) {
+        for (let y = 0; y < width; y++) {
             model[x][y] = {
                 haveMine: false,
                 minesNearby: 0,

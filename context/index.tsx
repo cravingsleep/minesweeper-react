@@ -1,19 +1,21 @@
 import { generateMinefield } from './generation';
 import React, { useReducer } from 'react';
 import type { TileModel } from './generation';
-import { Action, dugAction, firstDugAction, flagAction } from './actions';
+import { Action, dugAction, firstDugAction, flagAction, setFlagModeAction } from './actions';
 
 export type State = {
     minefield: TileModel[][],
     exploded: boolean,
-    firstMoveMade: boolean
+    firstMoveMade: boolean,
+    flagModeOn: boolean
 }
 
 export const MineFieldContext = React.createContext({
     state: {
         minefield: [] as TileModel[][],
         exploded: false,
-        firstMoveMade: false
+        firstMoveMade: false,
+        flagModeOn: false
     },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispatch: (() => { }) as React.Dispatch<Action>
@@ -24,14 +26,18 @@ export const MineFieldDispatchContext = React.createContext((() => { }) as React
 
 function mineFieldReducer(state: State, action: Action): State {
     switch (action.type) {
-        case 'dug':
+        case 'click':
+            if (state.flagModeOn) {
+                return Object.assign({}, state, flagAction(state, action));
+            }
+
             return Object.assign(
                 {},
                 state,
                 state.firstMoveMade ? dugAction(state, action) : firstDugAction(state, action)
             );
-        case 'flag':
-            return Object.assign({}, state, flagAction(state, action));
+        case 'setFlagMode':
+            return Object.assign({}, state, setFlagModeAction(action));
         default:
             return state;
     }
@@ -52,7 +58,8 @@ export function MineFieldContextProvider(props: Props) {
             props.mines
         ),
         exploded: false,
-        firstMoveMade: false
+        firstMoveMade: false,
+        flagModeOn: false
     });
 
     return <MineFieldContext.Provider value={{ state, dispatch }}>

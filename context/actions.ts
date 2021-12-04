@@ -2,13 +2,26 @@ import { State } from 'context';
 import sampleSize from 'lodash.samplesize';
 import { calculateMinesAround } from './generation';
 
-export type Action = {
+type MinefieldClickAction = {
+    type: 'click',
     x: number,
-    y: number,
-    type: 'dug' | 'flag'
+    y: number
 }
 
-function dugAction(state: State, action: Action): Partial<State> {
+type SetFlagModeAction = {
+    type: 'setFlagMode',
+    on: boolean
+}
+
+type Action = MinefieldClickAction | SetFlagModeAction;
+
+function setFlagModeAction(action: SetFlagModeAction): Partial<State> {
+    return {
+        flagModeOn: action.on
+    };
+}
+
+function dugAction(state: State, action: MinefieldClickAction): Partial<State> {
     const { minefield } = state;
     const { x, y } = action;
 
@@ -54,7 +67,7 @@ function dugAction(state: State, action: Action): Partial<State> {
     return { minefield, exploded: false };
 }
 
-function firstDugAction(state: State, action: Action): Partial<State> {
+function firstDugAction(state: State, action: MinefieldClickAction): Partial<State> {
     const { minefield } = state;
     const { x, y } = action;
 
@@ -94,7 +107,7 @@ function firstDugAction(state: State, action: Action): Partial<State> {
     return Object.assign({}, dugAction(state, action), { firstMoveMade: true });
 }
 
-function flagAction(state: State, action: Action): Partial<State> {
+function flagAction(state: State, action: MinefieldClickAction): Partial<State> {
     const { minefield } = state;
     const { x, y } = action;
 
@@ -107,4 +120,5 @@ function flagAction(state: State, action: Action): Partial<State> {
     return { minefield };
 }
 
-export { dugAction, firstDugAction, flagAction };
+export type { Action };
+export { dugAction, firstDugAction, flagAction, setFlagModeAction };
